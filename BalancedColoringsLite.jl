@@ -8,7 +8,8 @@ Aguiar, Dias - 2014 - The Lattice of Synchrony Subspaces of a Coupled Cell Netwo
 This code was created for replicating results from the literature.
 Does not include state-of-the-art algorithms, so cannot go beyond ND=14.
 
-This code uses Oscar to identify the symmetry group of network of each pattern
+This is the lightweight version does not require Oscar.jl
+Without Oscar we cannot identify the symmetry group of network of each pattern
 
 Things to be done:
 Use Distributed.jl
@@ -20,7 +21,7 @@ Jaime Cisternas, Santiago, November 2025
 
 module BalancedColorings
 
-using Oscar
+#using Oscar
 using Combinatorics
 using LinearAlgebra
 using ProgressBars
@@ -65,6 +66,14 @@ function writecsv(A,filename)
 	end
 end
 
+#G0 = symmetric_group(ND)
+#elments0 = elements(G0)
+#elments = findsymmetries(A,elments0)
+#G = permutation_group(ND,elments)
+#elments = elements(G) # <= so we use right order
+#@show describe(G)
+#@show small_group_identification(G)
+
 #=
 Finds symmetry group of graph based on adjacency matrix A.
 Based on Oscar package.
@@ -98,15 +107,16 @@ function find_group(A,isundirected=true)
 	
 	# creates an empty dictionary of strings and an empty dictionary of lists
 	Nelems = Int(order(G))
-	sglabels = Dict{Int64, String}()
-	sgsignatures = Dict{Int64, Vector{Int64}}()
+	labels = Dict{Int64, String}()
+	mysignatures = Dict{Int64, Vector{Int64}}()
 	for (i,s) = enumerate(sgs)
+		global mysignatures, labels
 		local mysignature
 		gs = string(gens(s))
 		w = findfirst('[',gs)
 		gs = describe(s)*" "*gs[w:end]
-		sglabels[i] = gs
-		println(i," : ",sglabels[i])
+		labels[i] = gs
+		println(i," : ",labels[i])
 		
 		mysignature = Vector{Int64}()
 		for (j,e) = enumerate(elments)
@@ -114,13 +124,13 @@ function find_group(A,isundirected=true)
 			push!(mysignature, bit)
 		end
 		#println(signature)
-		sgsignatures[i] = mysignature
+		mysignatures[i] = mysignature
 	end
 	
 	println()
 	println("Binary signatures [$(Nsgs)x$(Nelems) binary matrix] :")
 	for (i,s) = enumerate(sgs)
-		println(sgsignatures[i])
+		println(mysignatures[i])
 	end
 	
 	classsubgroups = [findfirst(conjugacy_class(G,s)==c for c in ccs) for s in sgs]
@@ -131,7 +141,7 @@ function find_group(A,isundirected=true)
 		push!(sizesccs,count(classsubgroups.==i))
 	end
 
-	return label, Vector.(elments), sgs, ccs, sglabels, sgsignatures
+	return label, elments, sgs, ccs, labels, mysignatures
 end
 
 allalmostequal(x) = norm(maximum(x)-minimum(x))<1e-6
@@ -239,7 +249,6 @@ function compareall(syncpatterns,syncpatternsk)
     
     # gets rid of redundant connections, good for drawing the lattice
     Cnonred = copy(C)
-    println("Nonredundant relations between sync patterns :")
     for i in Nsync:-1:2
         for j in (i-1):-1:1
             if C[i,j]==1
@@ -250,7 +259,7 @@ function compareall(syncpatterns,syncpatternsk)
     for i1 in 1:Nsync
         p1 = replace(string(syncpatternsk[i1])," "=>"")
         m1 = syncpatterns[p1].matrix
-        println(Cnonred[i1,:]," ",p1)
+        println(Cnonred[i1,:]," ",m1[i1])
     end
     
     return C, Cnonred

@@ -45,7 +45,8 @@ sumA = sum(A,dims=1)
 
 xy = [(1,1), (-1,1), (-1,-1), (1,-1), (0,0)]
 
-glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A,false)
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
@@ -63,7 +64,7 @@ println("Some examples")
 # measures distance to polydiagonal space
 @show norm(x - L*R*x)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
@@ -101,7 +102,8 @@ sumA = sum(A,dims=1)
 
 xy = [(cos(2*pi*t/ND),sin(2*pi*t/ND)) for t in 0:(ND-1)]
 
-glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A)
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
@@ -109,7 +111,7 @@ sumA = sum(A,dims=2)
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
@@ -149,7 +151,8 @@ sumA = sum(A,dims=1)
 
 xy = [(-1,1), (1,1), (-1,-1), (1,-1), (0,0)]
 
-glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A,false)
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
@@ -157,7 +160,7 @@ sumA = sum(A,dims=2)
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
@@ -194,7 +197,8 @@ sumA = sum(A,dims=1)
 
 xy = [(-1,1),(1,1),(1,-1),(-1,-1),(0,0)]
 
-glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A)
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
@@ -202,7 +206,7 @@ sumA = sum(A,dims=2)
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
@@ -240,7 +244,8 @@ sumA = sum(A,dims=1)
 
 xy = [(-0.5, -1),(0.5, -1),(-0.5, 1),(0.5, 1),(-1, 0.5),(-1, -0.5),(1, -0.5),(1, 0.5),(0, 0.5),(0, -0.5)]
 
-glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A)
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
@@ -248,7 +253,7 @@ sumA = sum(A,dims=2)
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
@@ -283,7 +288,8 @@ A[4,5] = 1; A[5,4] = 1;
 
 xy = [(1,-0.5),(1,0.5),(-1,0.5),(-1,-0.5),(0,0)]
 
-glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A)
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=1)[1,:]
@@ -291,7 +297,7 @@ sumA = sum(A,dims=1)[1,:]
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
@@ -311,7 +317,7 @@ A = A*inv(diagm(sumA))
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
@@ -349,7 +355,8 @@ A[5,1] = 1; A[1,5] = 1;
 
 xy = [(cos(t*2*pi/ND),sin(t*2*pi/ND)) for t in 0:(ND-1)]
 
-glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A)
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=1)[1,:]
@@ -357,7 +364,7 @@ sumA = sum(A,dims=1)[1,:]
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
@@ -377,7 +384,7 @@ A = A*inv(diagm(sumA))
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
-syncpatterns = BC.createdictionary(A,syncpatternsk,elments,sgsignatures,sglabels)
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
 
