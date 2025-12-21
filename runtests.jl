@@ -1,0 +1,396 @@
+#=
+Test some of the functionalities in BalancedColorings.jl
+using some well known examples from the literature on coupled cell networks
+
+Let's assume Oscar is not available (commented in BalancedColorings.jl)
+Without Oscar we cannot identify symmetry group of network or of patterns 
+
+Jaime Cisternas,Santiago, December 2025
+=#
+
+if ~("./" in LOAD_PATH)
+    push!(LOAD_PATH,"./")
+end
+
+using Revise
+using Combinatorics
+using LinearAlgebra
+using BalancedColorings
+const BC = BalancedColorings
+
+#####
+
+# Pivato network, also known as bowtie
+# directed, regular, nonsymmetric
+
+label = "pivato"
+println("\n$(label)\n")
+
+# builds adjacency matrix, uses A[source,target]
+ND = 5
+A = zeros(Int64,ND,ND);
+A[1,4] = 1
+A[1,5] = 1
+A[2,1] = 1
+A[2,5] = 1
+A[3,2] = 1
+A[4,3] = 1
+A[5,1] = 1
+A[5,2] = 1
+A[5,3] = 1
+A[5,4] = 1
+
+sumA = sum(A,dims=1)
+@assert allequal(sumA)
+
+xy = [(1,1), (-1,1), (-1,-1), (1,-1), (0,0)]
+
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
+Nelments = length(elments)
+
+sumA = sum(A,dims=2)
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+println("Some examples")
+@show p = syncpatternsk[5]
+@show R,L = BC.projectionmatrices(p)
+
+# generate state in polydiagonal space
+@show x = L*randn(length(p))
+
+# measures distance to polydiagonal space
+@show norm(x - L*R*x)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_network(label,A,xy)
+
+BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+#####
+
+# Ring of 6 nodes with next-nearest neighbors
+# undirected, regular, symmetric
+
+label = "C2xS4"
+println("\n$(label)\n")
+
+# builds adjacency matrix, uses A[source,target]
+ND = 6
+NN = 2
+A = zeros(Int64,ND,ND);
+for i in 1:ND
+    for j in 1:ND
+        if (min(abs(i-j+ND),abs(i-j-ND),abs(i-j))<=NN) & (i!=j)
+            A[i,j] = 1
+        end
+    end
+end
+
+sumA = sum(A,dims=1)
+@assert allequal(sumA)
+
+xy = [(cos(2*pi*t/ND),sin(2*pi*t/ND)) for t in 0:(ND-1)]
+
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
+Nelments = length(elments)
+
+sumA = sum(A,dims=2)
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_network(label,A,xy)
+
+BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+#####
+
+# Lodi
+# directed, nonregular, nonsymmetric
+
+label = "lodi"
+println("\n$(label)\n")
+
+# builds adjacency matrix, uses A[source,target]
+ND = 5
+A = zeros(Int64,ND,ND);
+A[2,1] = 1
+A[1,2] = 1
+A[1,3] = 1
+A[5,3] = 1
+A[4,3] = 1
+A[2,4] = 1
+A[3,4] = 1
+A[5,4] = 1
+A[1,5] = 1
+A[3,5] = 1
+A[4,5] = 1
+
+sumA = sum(A,dims=1)
+
+xy = [(-1,1), (1,1), (-1,-1), (1,-1), (0,0)]
+
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
+Nelments = length(elments)
+
+sumA = sum(A,dims=2)
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_network(label,A,xy)
+
+BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+#####
+
+# Sorrentino
+# undirected, nonregular, symmetric
+
+label = "sorrentino"
+println("\n$(label)\n")
+
+# builds adjacency matrix, uses A[source,target]
+ND = 5
+A = zeros(Int64,ND,ND);
+A[1,2] = A[2,1] = 1
+A[2,3] = A[3,2] = 1
+A[3,4] = A[4,3] = 1
+A[4,1] = A[1,4] = 1
+A[1,5] = A[5,1] = 1
+A[2,5] = A[5,2] = 1
+A[3,5] = A[5,3] = 1
+A[4,5] = A[5,4] = 1
+
+sumA = sum(A,dims=1)
+
+xy = [(-1,1),(1,1),(1,-1),(-1,-1),(0,0)]
+
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
+Nelments = length(elments)
+
+sumA = sum(A,dims=2)
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_network(label,A,xy)
+
+BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+#####
+
+# Siddique
+# undirected, nonregular, symmetric
+
+label = "siddique"
+println("\n$(label)\n")
+
+# builds adjacency matrix, uses A[source,target]
+ND = 10
+A = [0 0 0 0 0 1 1 0 0 1;
+0 0 0 0 0 1 1 0 0 1;
+0 0 0 0 1 0 0 1 1 0;
+0 0 0 0 1 0 0 1 1 0;
+0 0 1 1 0 1 0 0 1 0;
+1 1 0 0 1 0 0 0 0 1;
+1 1 0 0 0 0 0 1 0 1;
+0 0 1 1 0 0 1 0 1 0;
+0 0 1 1 1 0 0 1 0 0;
+1 1 0 0 0 1 1 0 0 0]
+
+sumA = sum(A,dims=1)
+
+xy = [(-0.5, -1),(0.5, -1),(-0.5, 1),(0.5, 1),(-1, 0.5),(-1, -0.5),(1, -0.5),(1, 0.5),(0, 0.5),(0, -0.5)]
+
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
+Nelments = length(elments)
+
+sumA = sum(A,dims=2)
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_network(label,A,xy)
+
+BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+#####
+
+# Butterfly network, also known as bowtie
+# undirected, nonregular, symmetric
+
+label = "nonreg_butterfly"
+println("\n$(label)\n")
+
+# builds adjacency matrix
+ND = 5
+A = zeros(Int64,ND,ND);
+A[1,2] = 1; A[2,1] = 1;
+A[3,4] = 1; A[4,3] = 1;
+A[1,5] = 1; A[5,1] = 1;
+A[2,5] = 1; A[5,2] = 1;
+A[3,5] = 1; A[5,3] = 1;
+A[4,5] = 1; A[5,4] = 1;
+
+#A = inv(diagm(sumA[:,1]))*A
+
+xy = [(1,-0.5),(1,0.5),(-1,0.5),(-1,-0.5),(0,0)]
+
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
+Nelments = length(elments)
+
+sumA = sum(A,dims=1)[1,:]
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_network(label,A,xy)
+
+BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+###
+
+A = A*inv(diagm(sumA))
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_patterns(label*"_normalized",A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+#####
+
+# Nonregular ring 6-node
+# undirected, nonregular, symmetric
+
+label = "nonreg_ring6"
+println("\n$(label)\n")
+
+# builds adjacency matrix
+ND = 6
+NN = 1
+A = zeros(Int64,ND,ND);
+for i in 1:ND
+    for j in 1:ND
+        if (min(abs(i-j+ND),abs(i-j-ND),abs(i-j))<=NN) & (i!=j)
+            A[i,j] = 1
+        end
+    end
+end
+A[1,3] = 1; A[3,1] = 1;
+A[3,5] = 1; A[5,3] = 1;
+A[5,1] = 1; A[1,5] = 1;
+
+#A = inv(diagm(sumA[:,1]))*A
+
+xy = [(cos(t*2*pi/ND),sin(t*2*pi/ND)) for t in 0:(ND-1)]
+
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
+Nelments = length(elments)
+
+sumA = sum(A,dims=1)[1,:]
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_network(label,A,xy)
+
+BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+###
+
+A = A*inv(diagm(sumA))
+
+syncpatternsk = BC.findallpatterns(A)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_patterns(label*"_normalized",A,xy,syncpatterns,syncpatternsk,classes,classesk)
