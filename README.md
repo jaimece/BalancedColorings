@@ -16,7 +16,6 @@ This is the lightweight version does not require Oscar.jl.
 Without Oscar we cannot identify the symmetry group of network of each pattern.
 
 Things to be done:
-Use Oscar.jl
 Use Distributed.jl
 
 See runtest.jl for examples.
