@@ -1,8 +1,8 @@
 #=
-Test some of the functionalities in BalancedColorings.jl
+Test some of the functionalities in BalancedColoringsLite.jl
 using some well known examples from the literature on coupled cell networks
 
-Let's assume Oscar is not available (commented in BalancedColorings.jl)
+Let's assume Oscar is not available.
 Without Oscar we cannot identify symmetry group of network or of patterns 
 
 Jaime Cisternas,Santiago, December 2025
@@ -15,8 +15,8 @@ end
 using Revise
 using Combinatorics
 using LinearAlgebra
-using BalancedColorings
-const BC = BalancedColorings
+using BalancedColoringsLite
+const BC = BalancedColoringsLite
 
 #####
 

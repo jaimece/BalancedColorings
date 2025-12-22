@@ -2,8 +2,8 @@
 Test some of the functionalities in BalancedColorings.jl
 using some well known examples from the literature on coupled cell networks
 
-Let's assume Oscar is not available (commented in BalancedColorings.jl)
-Without Oscar we cannot identify symmetry group of network or of patterns 
+Let's assume Oscar is available.
+Without Oscar we could not identify the symmetry group of network or of patterns.
 
 Jaime Cisternas,Santiago, December 2025
 =#
