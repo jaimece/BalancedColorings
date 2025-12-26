@@ -80,7 +80,7 @@ function find_group(A,isundirected=true)
 	G = permutation_group(ND,geners)
 	elments = elements(G) # <= so we use right order
 	
-	@show label = describe(G)
+	@show glabel = describe(G)
 	@show small_group_identification(G)
 	
 	# two key Oscar methods
@@ -131,7 +131,7 @@ function find_group(A,isundirected=true)
 		push!(sizesccs,count(classsubgroups.==i))
 	end
 
-	return label, Vector.(elments), sgs, ccs, sglabels, sgsignatures
+	return glabel, Vector.(elments), sgs, ccs, sglabels, sgsignatures
 end
 
 allalmostequal(x) = norm(maximum(x)-minimum(x))<1e-6
@@ -384,10 +384,10 @@ function createdictionary(A::Matrix,syncpatternsk,elments,sgsignatures,sglabels)
 		local R,L
 		label = replace(string(p)," "=>"")
 		R,L = projectionmatrices(p)
-		this = (pattern=p, matrix=synchronized(p), rank=length(p), R=copy(R), L=copy(L))
-		syncpatterns[label] = this
 		ex = example(p)
 		sy,fl = findbestmatch(ex,sgsignatures,sglabels,elments)
+		this = (pattern=p, matrix=synchronized(p), symmetry=sy, rank=length(p), R=copy(R), L=copy(L))
+		syncpatterns[label] = this
 		println(p," ",ex," ",sy," ",fl)
 	end
 
@@ -448,7 +448,7 @@ function plot_network(label,A,xy)
     if ND<=7
         mycolors = CM.Makie.wong_colors()
     else
-        mycolors = CM.Colors.HSV.(range(0, 360, ND), 50, 50)
+        mycolors = CM.Colors.HSV.(range(0, 360, ND+1), 50, 50)
     end
     
     # just the network
@@ -471,6 +471,19 @@ function plot_network(label,A,xy)
     CM.save(label*"_network.pdf",f)
 end
 
+function nicetitle(x)
+    xx = replace(x[2:end-1],"["=>"\\{","]"=>"\\}")
+    return L"\bowtie = %$xx"
+end
+
+function nicetitle(x,y)
+    xx = replace(x[2:end-1],"["=>"\\{","]"=>"\\}")
+    yy = replace(string(y),"x"=>"\\times","C2"=>"\\mathrm{C}_2","C3"=>"\\mathrm{C}_3","C4"=>"\\mathrm{C}_4","C5"=>"\\mathrm{C}_5","C6"=>"\\mathrm{C}_6",
+        "D2"=>"\\mathrm{D}_1","D4"=>"\\mathrm{D}_2","D6"=>"\\mathrm{D}_3","D8"=>"\\mathrm{D}_4","D10"=>"\\mathrm{D}_5","D12"=>"\\mathrm{D}_6",
+        "S2"=>"\\mathrm{S}_2","S3"=>"\\mathrm{S}_3","S4"=>"\\mathrm{S}_4","S5"=>"\\mathrm{S}_5","S6"=>"\\mathrm{S}_6")
+    return L"\bowtie = %$xx ~ ; ~ \Sigma = %$yy"
+end
+
 # all sync patterns
 function plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
     ND = size(A,1)
@@ -485,14 +498,24 @@ function plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
     if ND<=7
         mycolors = CM.Makie.wong_colors()
     else
-        mycolors = CM.Colors.HSV.(range(0, 360, ND), 50, 50)
+        mycolors = CM.Colors.HSV.(range(0, 360, ND+1), 50, 50)
     end
     
-    f = CM.Figure(size=(500*Nclass,500));
+    # plot patterns in a more or less square array
+    Nc = Int64(round(sqrt(Nclass)))
+    Nr = Nclass÷Nc
+    Nr += (Nclass>Nr*Nc) ? 1 : 0
+    f = CM.Figure(size=(500*Nc,500*Nr));
     axs = []
+    i1 = 1; i2 = 1
     for i in 1:Nclass
-        ax = f[1,i] = CM.Axis(f; title=classesk[i])
+        if i2>Nc
+            i2 = 1
+            i1 += 1
+        end
+        ax = f[i1,i2] = CM.Axis(f; title=nicetitle(classesk[i],syncpatterns[classesk[i]].symmetry))
         push!(axs,ax)
+        i2 += 1
     end
     
     for (i,k) in enumerate(classesk)

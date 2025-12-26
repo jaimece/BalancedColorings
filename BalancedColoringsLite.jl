@@ -19,7 +19,7 @@ See runtest.jl for examples.
 Jaime Cisternas, Santiago, November 2025
 =#
 
-module BalancedColorings
+module BalancedColoringsLite
 
 #using Oscar
 using Combinatorics
@@ -29,6 +29,7 @@ using Graphs
 using GraphMakie
 using CairoMakie
 const CM = CairoMakie
+using LaTeXStrings
 
 #=
 Finds all permutations that preserve symmetry of adjacency matrix A.
@@ -457,7 +458,7 @@ function plot_network(label,A,xy)
     if ND<=7
         mycolors = CM.Makie.wong_colors()
     else
-        mycolors = CM.Colors.HSV.(range(0, 360, ND), 50, 50)
+        mycolors = CM.Colors.HSV.(range(0, 360, ND+1), 50, 50)
     end
     
     # just the network
@@ -480,6 +481,11 @@ function plot_network(label,A,xy)
     CM.save(label*"_network.pdf",f)
 end
 
+function nicetitle(x)
+    xx = replace(x[2:end-1],"["=>"\\{","]"=>"\\}")
+    return L"\bowtie = %$xx"
+end
+
 # all sync patterns
 function plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
     ND = size(A,1)
@@ -494,14 +500,24 @@ function plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
     if ND<=7
         mycolors = CM.Makie.wong_colors()
     else
-        mycolors = CM.Colors.HSV.(range(0, 360, ND), 50, 50)
+        mycolors = CM.Colors.HSV.(range(0, 360, ND+1), 50, 50)
     end
-    
-    f = CM.Figure(size=(500*Nclass,500));
+
+    # plot patterns in a more or less square array
+    Nc = Int64(round(sqrt(Nclass)))
+    Nr = Nclass÷Nc
+    Nr += (Nclass>Nr*Nc) ? 1 : 0
+    f = CM.Figure(size=(500*Nc,500*Nr));
     axs = []
+    i1 = 1; i2 = 1
     for i in 1:Nclass
-        ax = f[1,i] = CM.Axis(f; title=classesk[i])
+        if i2>Nc
+            i2 = 1
+            i1 += 1
+        end
+        ax = f[i1,i2] = CM.Axis(f; title=nicetitle(classesk[i]))
         push!(axs,ax)
+        i2 += 1
     end
     
     for (i,k) in enumerate(classesk)
