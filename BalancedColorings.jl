@@ -28,6 +28,8 @@ using Graphs
 using GraphMakie
 using CairoMakie
 const CM = CairoMakie
+using GraphMakie.NetworkLayout
+using NetworkLayout
 
 #=
 Finds all permutations that preserve symmetry of adjacency matrix A.
@@ -132,6 +134,34 @@ function find_group(A,isundirected=true)
 	end
 
 	return glabel, Vector.(elments), sgs, ccs, sglabels, sgsignatures
+end
+
+function find_group_lite(A,isundirected=true)
+
+    ND = size(A,1)
+    flag = isundirected ? Undirected : Directed
+
+	# another way to get the same group
+	g = graph_from_adjacency_matrix(flag,A) # <= KEY
+	geners = automorphism_group_generators(g)
+	G = permutation_group(ND,geners)
+	elments = elements(G) # <= so we use right order
+	
+	@show glabel = describe(G)
+	#@show small_group_identification(G)
+	
+	return glabel, Vector.(elments)
+end
+
+function find_dim_fixed(elments,sgsignature)
+    ND = maximum(elments[1])
+    @assert length(elments)==length(sgsignature)
+    x = randn(ND)
+    y = zeros(Float64,ND)
+    for i in findall(sgsignature.>0)
+        y += x[elments[i]]
+    end
+    return y, length(unique(round.(y,digits=6)))
 end
 
 allalmostequal(x) = norm(maximum(x)-minimum(x))<1e-6
@@ -355,7 +385,7 @@ function findbestmatch(datum::Vector{Int64},signatures::Dict{Int64,Vector{Int64}
     end
     #println(simil)
     kk = argmin(simil)
-    return labels[kk], simil[kk]==0
+    return kk, labels[kk], simil[kk]==0
 end
 
 function createdictionary(A::Matrix,syncpatternsk,elments)
@@ -385,10 +415,14 @@ function createdictionary(A::Matrix,syncpatternsk,elments,sgsignatures,sglabels)
 		label = replace(string(p)," "=>"")
 		R,L = projectionmatrices(p)
 		ex = example(p)
-		sy,fl = findbestmatch(ex,sgsignatures,sglabels,elments)
-		this = (pattern=p, matrix=synchronized(p), symmetry=sy, rank=length(p), R=copy(R), L=copy(L))
+		kk,sy,fl = findbestmatch(ex,sgsignatures,sglabels,elments)
+		mat = synchronized(p)
+		# sypart, els = find_group_lite(mat)
+		y, dimfix = find_dim_fixed(elments,sgsignatures[kk])
+		isnonexotic = length(p)==dimfix # norm(y-L*R*y)<1e-6
+		this = (pattern=p, matrix=mat, symmetry=sy, rank=length(p), R=copy(R), L=copy(L), isnonexotic=isnonexotic)
 		syncpatterns[label] = this
-		println(p," ",ex," ",sy," ",fl)
+		println(p," ",ex," ",sy," ",fl," ",isnonexotic) # y," ",norm(y-L*R*y))
 	end
 
     return syncpatterns
@@ -411,7 +445,7 @@ function findclasses(syncpatterns,syncpatternsk,elments)
 	return classes, classesk, invclasses
 end
 
-function latticeclasses(syncpatterns,syncpatternsk,classes,classesk,invclasses)
+function latticeclasses(C,syncpatterns,syncpatternsk,classes,classesk,invclasses)
 
     Nclass = length(classes)
 	# Finds connections between classes
@@ -476,12 +510,26 @@ function nicetitle(x)
     return L"\bowtie = %$xx"
 end
 
+function nicetitle1(x)
+    xx = replace(x[2:end-1],"["=>"\\{","]"=>"\\}")
+    return L"%$xx"
+end
+
 function nicetitle(x,y)
     xx = replace(x[2:end-1],"["=>"\\{","]"=>"\\}")
     yy = replace(string(y),"x"=>"\\times","C2"=>"\\mathrm{C}_2","C3"=>"\\mathrm{C}_3","C4"=>"\\mathrm{C}_4","C5"=>"\\mathrm{C}_5","C6"=>"\\mathrm{C}_6",
         "D2"=>"\\mathrm{D}_1","D4"=>"\\mathrm{D}_2","D6"=>"\\mathrm{D}_3","D8"=>"\\mathrm{D}_4","D10"=>"\\mathrm{D}_5","D12"=>"\\mathrm{D}_6",
         "S2"=>"\\mathrm{S}_2","S3"=>"\\mathrm{S}_3","S4"=>"\\mathrm{S}_4","S5"=>"\\mathrm{S}_5","S6"=>"\\mathrm{S}_6")
     return L"\bowtie = %$xx ~ ; ~ \Sigma = %$yy"
+end
+
+function nicetitle(x,y,z)
+    xx = replace(x[2:end-1],"["=>"\\{","]"=>"\\}")
+    yy = replace(string(y),"x"=>"\\times","C2"=>"\\mathrm{C}_2","C3"=>"\\mathrm{C}_3","C4"=>"\\mathrm{C}_4","C5"=>"\\mathrm{C}_5","C6"=>"\\mathrm{C}_6",
+        "D2"=>"\\mathrm{D}_1","D4"=>"\\mathrm{D}_2","D6"=>"\\mathrm{D}_3","D8"=>"\\mathrm{D}_4","D10"=>"\\mathrm{D}_5","D12"=>"\\mathrm{D}_6",
+        "S2"=>"\\mathrm{S}_2","S3"=>"\\mathrm{S}_3","S4"=>"\\mathrm{S}_4","S5"=>"\\mathrm{S}_5","S6"=>"\\mathrm{S}_6")
+    zz = z>0 ? "" : "(\\mathrm{exotic})"
+    return L"\bowtie = %$xx ~ ; ~ \Sigma = %$yy ~~ %$zz"
 end
 
 # all sync patterns
@@ -513,7 +561,7 @@ function plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
             i2 = 1
             i1 += 1
         end
-        ax = f[i1,i2] = CM.Axis(f; title=nicetitle(classesk[i],syncpatterns[classesk[i]].symmetry))
+        ax = f[i1,i2] = CM.Axis(f; title=nicetitle(classesk[i],syncpatterns[classesk[i]].symmetry,syncpatterns[classesk[i]].isnonexotic))
         push!(axs,ax)
         i2 += 1
     end
@@ -535,6 +583,29 @@ function plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
     end
     
     CM.save(label*"_patterns.pdf",f)
+end
+
+function plot_lattice(label,Cnonred,ER,syncpatterns,classesk)
+    Nclass = length(classesk)
+    h = SimpleDiGraph(Cnonred)
+    initialpos = Dict([[i,Point2f(0.0,-syncpatterns[classesk[i]].rank)] for i in 1:Nclass])
+    pin = Dict([[i,(i in [1,Nclass],true)] for i in 1:Nclass])
+    springl = Spring(;initialpos, pin, seed=2, C=1.5, iterations=100)
+    positions = springl(Cnonred+ER)
+    fixed_layout(_) = positions
+    #sfdpl   = SFDP(;initialpos, pin, tol=0.0, K=2.0)
+    #stressl = Stress(;initialpos, pin, reltols=0.0, abstolx=0.0, iterations=100)
+    f, ax, p = graphplot(h, layout=fixed_layout,
+                     ilabels=nicetitle1.(classesk),
+                     arrow_shift=:end,
+                     node_size=10, arrow_size=20)
+    CM.autolimits!(ax)
+    CM.hidedecorations!(ax); CM.hidespines!(ax)
+    #ax.aspect = CM.DataAspect()
+    CM.xlims!(ax,minimum([xy[1] for xy in positions])-1.0,maximum([xy[1] for xy in positions])+1.0)
+    CM.ylims!(ax,minimum([xy[2] for xy in positions])-0.5,maximum([xy[2] for xy in positions])+0.5)
+    CM.save(label*"_lattice.pdf",f)
+
 end
 
 end # module

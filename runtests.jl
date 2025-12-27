@@ -76,12 +76,16 @@ BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
 
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
+
 #####
 
 # Ring of 6 nodes with next-nearest neighbors
 # undirected, regular, symmetric
 
-label = "C2xS4"
+label = "nicol"
 println("\n$(label)\n")
 
 # builds adjacency matrix, uses A[source,target]
@@ -121,6 +125,10 @@ println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
 BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
@@ -170,6 +178,10 @@ BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
 
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
+
 #####
 
 # Sorrentino
@@ -214,6 +226,10 @@ println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
 BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
@@ -260,6 +276,10 @@ println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
 BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 

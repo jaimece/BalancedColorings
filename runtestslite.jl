@@ -82,7 +82,7 @@ BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
 # Ring of 6 nodes with next-nearest neighbors
 # undirected, regular, symmetric
 
-label = "C2xS4"
+label = "nicol"
 println("\n$(label)\n")
 
 # builds adjacency matrix, uses A[source,target]
