@@ -51,11 +51,11 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
-syncpatternsk = BC.findallpatterns(A)
+syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
 
 println("Some examples")
-@show p = syncpatternsk[5]
+@show p = syncpatternsk[3]
 @show R,L = BC.projectionmatrices(p)
 
 # generate state in polydiagonal space
@@ -76,6 +76,10 @@ println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
 BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
@@ -108,7 +112,7 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
-syncpatternsk = BC.findallpatterns(A)
+syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
 
 syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
@@ -123,6 +127,12 @@ println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
 BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
+
+@assert false
 
 #####
 
@@ -157,7 +167,7 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
-syncpatternsk = BC.findallpatterns(A)
+syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
 
 syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
@@ -172,6 +182,10 @@ println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
 BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
@@ -203,7 +217,7 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
-syncpatternsk = BC.findallpatterns(A)
+syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
 
 syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
@@ -218,6 +232,10 @@ println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
 BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
@@ -250,7 +268,7 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
-syncpatternsk = BC.findallpatterns(A)
+syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
 
 syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
@@ -265,6 +283,10 @@ println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
 BC.plot_network(label,A,xy)
 
 BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 

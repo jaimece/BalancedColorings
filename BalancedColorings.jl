@@ -171,7 +171,7 @@ Finds all synchronization patterns of an adjacency matrix A.
 This is the right order.
 Exhaustive search, cannot go beyond ND=14
 =#
-function findallpatterns(A)
+function findallpatterns(A,diffusivecoupling=false)
     println("Finding sync patterns...")
 
     ND = size(A,1)
@@ -187,9 +187,11 @@ function findallpatterns(A)
 			if length(s)>1
 				conects = []
 				for i in s
-				    push!(conects, [sum(A[s1,i]) for s1 in p if ~(i in s1)]) # key correction
-				    #push!(conects, [sum(A[i,s1]) for s1 in p]) # key correction
-					#push!(conects, [sum(A[i,s1])>0 for s1 in p])
+				    if diffusivecoupling
+    				    push!(conects, [sum(A[s1,i]) for s1 in p if ~(i in s1)]) # key correction
+    				else
+				        push!(conects, [sum(A[i,s1]) for s1 in p]) # key correction
+                    end
 				end
 				#@show conects
 				isadmissible = allalmostequal(conects) & isadmissible # <=
