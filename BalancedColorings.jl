@@ -71,7 +71,7 @@ end
 Finds symmetry group of graph based on adjacency matrix A.
 Based on Oscar package.
 =#
-function find_group(A,isundirected=true)
+function find_group(A,isundirected=true,showsgs=true)
 
     ND = size(A,1)
     flag = isundirected ? Undirected : Directed
@@ -83,7 +83,7 @@ function find_group(A,isundirected=true)
 	elments = elements(G) # <= so we use right order
 	
 	@show glabel = describe(G)
-	@show small_group_identification(G)
+	@show order(G)<=1024 ? small_group_identification(G) : nothing
 	
 	# two key Oscar methods
 	sgs = subgroups(G)
@@ -108,7 +108,9 @@ function find_group(A,isundirected=true)
 		w = findfirst('[',gs)
 		gs = describe(s)*" "*gs[w:end]
 		sglabels[i] = gs
-		println(i," : ",sglabels[i])
+		if showsgs
+		    println(i," : ",sglabels[i])
+		end
 		
 		mysignature = Vector{Int64}()
 		for (j,e) = enumerate(elments)
@@ -119,17 +121,21 @@ function find_group(A,isundirected=true)
 		sgsignatures[i] = mysignature
 	end
 	
-	println()
-	println("Binary signatures [$(Nsgs)x$(Nelems) binary matrix] :")
-	for (i,s) = enumerate(sgs)
-		println(sgsignatures[i])
+	if showsgs
+		println()
+		println("Binary signatures [$(Nsgs)x$(Nelems) binary matrix] :")
+		for (i,s) = enumerate(sgs)
+			println(sgsignatures[i])
+		end
 	end
 	
 	classsubgroups = [findfirst(conjugacy_class(G,s)==c for c in ccs) for s in sgs]
 	
 	sizesccs = [0];
 	for i in 1:length(ccs)
-		println(i," : ",count(classsubgroups.==i))
+		if showsgs
+		    println(i," : ",count(classsubgroups.==i))
+		end
 		push!(sizesccs,count(classsubgroups.==i))
 	end
 
@@ -165,6 +171,63 @@ function find_dim_fixed(elments,sgsignature)
 end
 
 allalmostequal(x) = norm(maximum(x)-minimum(x))<1e-6
+almostequal(x,y) = norm(x.-y)<1e-6
+
+#=
+Follows:
+Belykh, Hasler - 2011 - Mesoscale and clusters of synchrony in networks of bursting neurons
+=#
+function findminimalpattern(A,diffusivecoupling=false)
+    ND = size(A,1)
+	pat = ones(Int64,ND)
+	
+	haschanged = true
+	while haschanged
+	
+		haschanged = false
+		cols = unique(pat)
+    	cnext = maximum(cols)+1
+	
+		for col in cols
+			ii = findall(pat.==col)
+			connects = []
+			for i in ii
+			    if diffusivecoupling
+			        push!(connects, [sum([A[j,i] for j in findall(pat.==c)]) for c in cols if (c!=col)])
+			    else
+    				push!(connects, [sum([A[j,i] for j in findall(pat.==c)]) for c in cols])
+    			end
+			end
+			for i in 2:length(connects)
+				if ~almostequal(connects[i],connects[1])
+					pat[ii[i]] = cnext
+					haschanged = true
+				end
+			end
+			if haschanged
+				cnext += 1
+			end
+		end
+		#@show pat
+	end
+	
+	syncp = Vector{Vector{Int64}}()
+	c = pat[1]
+	ii = findall(pat.==c)
+	push!(syncp,ii)
+	for i in 2:ND
+		if all([ ~(i in s) for s in syncp])
+			c = pat[i]
+			ii = findall(pat.==c)
+			push!(syncp,ii)
+		end
+	end
+	
+	println("Minimal balanced coloring : ",syncp)
+	
+	return syncp
+
+end
 
 #=
 Finds all synchronization patterns of an adjacency matrix A.
@@ -185,16 +248,16 @@ function findallpatterns(A,diffusivecoupling=false)
 		ng = length(p)
 		for s in p
 			if length(s)>1
-				conects = []
+				connects = []
 				for i in s
 				    if diffusivecoupling
-    				    push!(conects, [sum(A[s1,i]) for s1 in p if ~(i in s1)]) # key correction
+    				    push!(connects, [sum(A[s1,i]) for s1 in p if ~(i in s1)]) # key correction
     				else
-				        push!(conects, [sum(A[i,s1]) for s1 in p]) # key correction
+				        push!(connects, [sum(A[s1,i]) for s1 in p]) # key correction
                     end
 				end
 				#@show conects
-				isadmissible = allalmostequal(conects) & isadmissible # <=
+				isadmissible = allalmostequal(connects) & isadmissible # <=
 			end
 		end
 	

@@ -51,6 +51,8 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
+minsyncpattern = BC.findminimalpattern(A)
+
 syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
 
@@ -67,6 +69,8 @@ println("Some examples")
 syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
 
 C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+#@assert false
 
 # Finds classes of conjugate patterns
 classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
@@ -112,6 +116,8 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
+minsyncpattern = BC.findminimalpattern(A,true)
+
 syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
 
@@ -132,7 +138,7 @@ CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,in
 
 BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
-@assert false
+#@assert false
 
 #####
 
@@ -166,6 +172,8 @@ elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
+
+minsyncpattern = BC.findminimalpattern(A,true)
 
 syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
@@ -217,6 +225,8 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
+minsyncpattern = BC.findminimalpattern(A,true)
+
 syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)
 
@@ -267,6 +277,8 @@ elments = BC.findsymmetries(A,allelments)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
+
+minsyncpattern = BC.findminimalpattern(A,true)
 
 syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)

@@ -50,6 +50,8 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
+minsyncpattern = BC.findminimalpattern(A)
+
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
@@ -110,6 +112,8 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
+minsyncpattern = BC.findminimalpattern(A)
+
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
@@ -162,6 +166,8 @@ Nelments = length(elments)
 
 sumA = sum(A,dims=2)
 
+minsyncpattern = BC.findminimalpattern(A)
+
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
 
@@ -210,6 +216,8 @@ glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
+
+minsyncpattern = BC.findminimalpattern(A)
 
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
@@ -260,6 +268,8 @@ glabel, elments, sgs, ccs, sglabels, sgsignatures = BC.find_group(A)
 Nelments = length(elments)
 
 sumA = sum(A,dims=2)
+
+minsyncpattern = BC.findminimalpattern(A)
 
 syncpatternsk = BC.findallpatterns(A)
 Nsync = length(syncpatternsk)
