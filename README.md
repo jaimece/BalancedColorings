@@ -38,11 +38,12 @@ BalancedColoringsLite.jl
 This is the lightweight version does not require Oscar.jl.
 Without Oscar we cannot identify the symmetry group of the network and of each pattern.
 Also the subgroups cannot be identified.
-See runtest.jl for examples.
+See runtestlite.jl for examples.
 
 BalancedColorings.jl
 
 This is the regular version, uses Oscar.
+See runtest.jl for examples.
 
 Future plans:
 
