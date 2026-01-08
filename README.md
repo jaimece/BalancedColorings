@@ -6,7 +6,9 @@ Its basic assumptions are: identical nodes coupled in an additive way.
 Inspired in:
 
 Stewart, Golubitsky, Pivato - 2003 - Symmetry groupoids and patterns of synchrony in coupled cell networks
+
 Kamei, Cock - 2012 - Computation of balanced equivalence relations and their lattice for a coupled cell network
+
 Aguiar, Dias - 2014 - The Lattice of Synchrony Subspaces of a Coupled Cell Network/ Characterization and Computation Algorithm
 
 and several others.
