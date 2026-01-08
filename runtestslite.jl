@@ -20,6 +20,7 @@ const BC = BalancedColoringsLite
 
 #####
 
+# Stewart, Golubitsky, Pivato - 2003 - Symmetry groupoids and patterns of synchrony in coupled cell networks.pdf
 # Pivato network, also known as bowtie
 # directed, regular, nonsymmetric
 
@@ -87,6 +88,7 @@ BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
+# Golubitsky, Nicol, Stewart - 2004 - Some Curious Phenomena in Coupled Cell Networks.pdf
 # Ring of 6 nodes with next-nearest neighbors
 # undirected, regular, symmetric
 
@@ -142,7 +144,7 @@ BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
-# Lodi
+# Lodi, Sorrentino, Storace - 2021 - One-way dependent clusters and stability of cluster synchronization in directed networks.pdf
 # directed, nonregular, nonsymmetric
 
 label = "lodi"
@@ -197,7 +199,7 @@ BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
-# Sorrentino
+# Sorrentino et al. - 2016 - Complete characterization of the stability of cluster synchronization in complex dynamical networks.pdf
 # undirected, nonregular, symmetric
 
 label = "sorrentino"
@@ -249,7 +251,7 @@ BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
 
 #####
 
-# Siddique
+# Siddique et al. - 2018 - Symmetry- and Input-Cluster Synchronization in Networks.pdf
 # undirected, nonregular, symmetric
 
 label = "siddique"
@@ -279,6 +281,62 @@ Nelments = length(elments)
 sumA = sum(A,dims=2)
 
 minsyncpattern = BC.findminimalpattern(A,true)
+
+syncpatternsk = BC.findallpatterns(A,true)
+Nsync = length(syncpatternsk)
+
+syncpatterns = BC.createdictionary(A,syncpatternsk,elments)
+
+C, Cnonred = BC.compareall(syncpatterns,syncpatternsk);
+
+# Finds classes of conjugate patterns
+classes, classesk, invclasses = BC.findclasses(syncpatterns,syncpatternsk,elments)
+Nclass = length(classes)
+println("Number of sync patterns : $(Nsync), number of classes : $(Nclass)")
+
+BC.plot_network(label,A,xy)
+
+BC.plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
+
+CC,ER = BC.latticeclasses(Cnonred,syncpatterns,syncpatternsk,classes,classesk,invclasses)
+
+BC.plot_lattice(label,CC,ER,syncpatterns,classesk)
+
+#####
+
+# Schaub et al. - 2016 - Graph partitions and cluster synchronization in networks of oscillators
+# Aguiar, Dias - 2018 - Synchronization and Equitable Partitions in Weighted Networks.pdf
+# undirected, nonregular, symmetric, weighted
+
+label = "nonreg_schaub_2"
+println("\n$(label)\n")
+
+# builds adjacency matrix
+ND = 8
+A = zeros(Int64,ND,ND);
+A[1,2] = 1; A[2,1] = 1;
+A[1,3] = 1; A[3,1] = 1;
+A[1,4] = 1; A[4,1] = 1;
+A[3,2] = 1; A[2,3] = 1;
+A[4,2] = 1; A[2,4] = 1;
+A[3,5] = -1; A[5,3] = -1;
+A[4,5] = -1; A[5,4] = -1;
+A[6,5] = 1; A[5,6] = 1;
+A[5,7] = 1; A[7,5] = 1;
+A[6,7] = 1; A[7,6] = 1;
+A[8,5] = -1; A[5,8] = -1;
+
+#A = inv(diagm(sumA[:,1]))*A
+
+xy = [(-1,0.5),(-1,-0.5),(-0.5,1),(-0.5,-1),(0,0),(0.5,-0.5),(1,0),(0.5,0.5)]
+
+allelments = permutations(1:ND)
+elments = BC.findsymmetries(A,allelments)
+Nelments = length(elments)
+
+sumA = sum(A,dims=2)
+
+minsyncpattern = BC.findminimalpattern(A,true) # diffusivecoupling=true/false changes everything!!
 
 syncpatternsk = BC.findallpatterns(A,true)
 Nsync = length(syncpatternsk)

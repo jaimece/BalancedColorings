@@ -71,16 +71,28 @@ end
 Finds symmetry group of graph based on adjacency matrix A.
 Based on Oscar package.
 =#
-function find_group(A,isundirected=true,showsgs=true)
+function find_group(A,isundirected=true,showsgs=true,isweighted=false)
 
     ND = size(A,1)
     flag = isundirected ? Undirected : Directed
 
 	# another way to get the same group
-	g = graph_from_adjacency_matrix(flag,A) # <= KEY
+	g = graph_from_adjacency_matrix(flag,Int64.(A.!=0)) # <= KEY
 	geners = automorphism_group_generators(g)
 	G = permutation_group(ND,geners)
 	elments = elements(G) # <= so we use right order
+	
+	if isweighted
+	    allelments = elments
+        elments = Vector{PermGroupElem}() # Vector{Vector{Int64}}()
+        for e in ProgressBar(allelments)
+            ii = Vector(e)
+            if all(A.==A[ii,ii])
+                push!(elments,e)
+            end    
+        end
+        G = permutation_group(ND,elments)
+    end
 	
 	@show glabel = describe(G)
 	@show order(G)<=1024 ? small_group_identification(G) : nothing
@@ -142,16 +154,28 @@ function find_group(A,isundirected=true,showsgs=true)
 	return glabel, Vector.(elments), sgs, ccs, sglabels, sgsignatures
 end
 
-function find_group_lite(A,isundirected=true)
+function find_group_lite(A,isundirected=true,isweighted=false)
 
     ND = size(A,1)
     flag = isundirected ? Undirected : Directed
 
 	# another way to get the same group
-	g = graph_from_adjacency_matrix(flag,A) # <= KEY
+	g = graph_from_adjacency_matrix(flag,Int64.(A.!=0)) # <= KEY
 	geners = automorphism_group_generators(g)
 	G = permutation_group(ND,geners)
 	elments = elements(G) # <= so we use right order
+	
+	if isweighted
+	    allelments = elments
+        elments = Vector{PermGroupElem}() # Vector{Vector{Int64}}()
+        for e in ProgressBar(allelments)
+            ii = Vector(e)
+            if all(A.==A[ii,ii])
+                push!(elments,e)
+            end    
+        end
+        G = permutation_group(ND,elments)
+    end
 	
 	@show glabel = describe(G)
 	#@show small_group_identification(G)
@@ -541,8 +565,8 @@ function plot_network(label,A,xy)
     if xy == nothing
         xy = Shell()
     end
-    issym = ((A.>0)==(A'.>0))
-    g = issym ? SimpleGraph(A.>0) : SimpleDiGraph(A.>0)
+    issym = ((A.!=0)==(A'.!=0))
+    g = issym ? SimpleGraph(A.!=0) : SimpleDiGraph(A.!=0)
     
     if ND<=7
         mycolors = CM.Makie.wong_colors()
@@ -603,8 +627,8 @@ function plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
     if xy == nothing
         xy = Shell()
     end
-    issym = ((A.>0)==(A'.>0))
-    g = issym ? SimpleGraph(A.>0) : SimpleDiGraph(A.>0)
+    issym = ((A.!=0)==(A'.!=0))
+    g = issym ? SimpleGraph(abs.(A).>0) : SimpleDiGraph(abs.(A).>0)
     Nsync = length(syncpatternsk)
     Nclass = length(classesk)
     

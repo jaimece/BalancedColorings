@@ -35,6 +35,7 @@ using NetworkLayout
 
 #=
 Finds all permutations that preserve symmetry of adjacency matrix A.
+Works for weighted and unweighted matrices.
 =#
 function findsymmetries(A::Matrix,allelments)
     println("Finding symmetries...")
@@ -71,6 +72,7 @@ end
 Writes a csv file
  SourceName,TargetName,Type,Source,Target
  Type can be positive, negative or dual
+ Works for unweighted matrices only
 =#
 function writecsv(A,filename)
     ND = size(A,1)
@@ -102,6 +104,7 @@ almostequal(x,y) = norm(x.-y)<1e-6
 #=
 Follows:
 Belykh, Hasler - 2011 - Mesoscale and clusters of synchrony in networks of bursting neurons
+Works for weighted and unweighted matrices
 =#
 function findminimalpattern(A,diffusivecoupling=false)
     ND = size(A,1)
@@ -159,6 +162,7 @@ end
 Finds all synchronization patterns of an adjacency matrix A.
 This is the right order.
 Exhaustive search, cannot go beyond ND=14
+Works for weighted and unweighted matrices
 =#
 function findallpatterns(A,diffusivecoupling=false)
     println("Finding sync patterns...")
@@ -427,8 +431,8 @@ function plot_network(label,A,xy)
     if xy == nothing
         xy = Shell()
     end
-    issym = ((A.>0)==(A'.>0))
-    g = issym ? SimpleGraph(A.>0) : SimpleDiGraph(A.>0)
+    issym = ((A.!=0)==(A'.!=0))
+    g = issym ? SimpleGraph(A.!=0) : SimpleDiGraph(A.!=0)
     
     if ND<=7
         mycolors = CM.Makie.wong_colors()
@@ -478,8 +482,8 @@ function plot_patterns(label,A,xy,syncpatterns,syncpatternsk,classes,classesk)
     if xy == nothing
         xy = Shell()
     end
-    issym = ((A.>0)==(A'.>0))
-    g = issym ? SimpleGraph(A.>0) : SimpleDiGraph(A.>0)
+    issym = ((A.!=0)==(A'.!=0))
+    g = issym ? SimpleGraph(A.!=0) : SimpleDiGraph(A.!=0)
     Nsync = length(syncpatternsk)
     Nclass = length(classesk)
     
