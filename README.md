@@ -18,26 +18,27 @@ This code was created for replicating different results found the literature fro
 Does not include state-of-the-art algorithms or sophisticated accelerations, so it cannot go beyond N = 14 oscillators.
 
 Its main input is the (weighted) adjacency matrix of the network.
+We use the convention A[source, target].
 
 The output are the symmetry group and all the possible synchronization patterns.
 
 It works with networks that are:
 
-Regular/nonregular
+Regular/nonregular (the vertical sums of A are/aren't equal)
 
-Symmetry/nonsymmetric
+Symmetry/nonsymmetric (with respect to permutations of rows and columns)
 
-Directed/undirected
+Directed/undirected (symmetric/unsymmetric matrix A)
 
-Unweighted/weighted
+Unweighted/weighted (binary/real valued A)
 
-Nondiffusive/diffusive
+Nondiffusive/diffusive (intra-cluster interactions are zero)
 
 We provide two versions of the module:
 
 BalancedColoringsLite.jl
 
-This is the lightweight version does not require Oscar.jl.
+This is the lightweight version, does not require Oscar.jl.
 Without Oscar we cannot identify the symmetry group of the network and of each pattern.
 Also the subgroups cannot be identified.
 See runtestlite.jl for examples.
@@ -56,4 +57,7 @@ Include Distributed.jl
 Integrate with Graphs.jl
 
 Integrate with NetworkDynamics.jl
-Allow for different nodes (for instance in multiple layers)
+
+Allow for different types of nodes (for instance in multiple layers)
+
+Allow for different types of arrows
