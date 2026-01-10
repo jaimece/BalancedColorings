@@ -5,11 +5,11 @@ Its basic assumptions are: identical nodes coupled in an additive way.
 
 Inspired in:
 
-Stewart, Golubitsky, Pivato - 2003 - Symmetry groupoids and patterns of synchrony in coupled cell networks
+* Stewart, Golubitsky, Pivato - 2003 - Symmetry groupoids and patterns of synchrony in coupled cell networks
 
-Kamei, Cock - 2012 - Computation of balanced equivalence relations and their lattice for a coupled cell network
+* Kamei, Cock - 2012 - Computation of balanced equivalence relations and their lattice for a coupled cell network
 
-Aguiar, Dias - 2014 - The Lattice of Synchrony Subspaces of a Coupled Cell Network/ Characterization and Computation Algorithm
+* Aguiar, Dias - 2014 - The Lattice of Synchrony Subspaces of a Coupled Cell Network/ Characterization and Computation Algorithm
 
 and several others.
 
@@ -25,52 +25,52 @@ See the examples for additional functionalities.
 
 It works with networks that are:
 
-Regular/nonregular (the vertical sums of A are/aren't equal)
+* Regular/nonregular (the vertical sums of A are/aren't equal)
 
-Symmetric/nonsymmetric (with respect to permutations of rows and columns)
+* Symmetric/nonsymmetric (with respect to permutations of rows and columns)
 
-Undirected/directed (symmetric/unsymmetric matrix A)
+* Undirected/directed (symmetric/unsymmetric matrix A)
 
-Unweighted/weighted (binary/real valued A)
+* Unweighted/weighted (binary/real valued A)
 
-Nondiffusive/diffusive (intra-cluster interactions are ignored for external equitable partitions)
+* Nondiffusive/diffusive (intra-cluster interactions are ignored for external equitable partitions)
 
 We provide two versions of the module:
 
-BalancedColoringsLite.jl
+(1) BalancedColoringsLite.jl
 
 This is the lightweight version, does not require Oscar.jl.
 Without Oscar we cannot identify the symmetry group of the network and of each pattern.
 Also the subgroups cannot be identified.
 See runtestlite.jl for examples.
 
-BalancedColorings.jl
+(2) BalancedColorings.jl
 
 This is the regular version, uses Oscar.
 See runtest.jl for examples.
 
 Requirements:
 
-Oscar.jl
+* Oscar.jl
 
-Graphs.jl
+* Graphs.jl
 
-CairoMakie.jl
+* CairoMakie.jl
 
-GraphsMakie.jl
+* GraphsMakie.jl
 
 Future plans:
 
-Improve use of keyword arguments, namespaces, etc.
+* Improve use of keyword arguments, namespaces, etc.
 
-Improve lattice plot
+* Improve lattice plot
 
-Include Distributed.jl
+* Include Distributed.jl
 
-Integrate with Graphs.jl
+* Integrate with Graphs.jl
 
-Integrate with NetworkDynamics.jl
+* Integrate with NetworkDynamics.jl
 
-Allow for different types of nodes (for instance in multiple layers)
+* Allow for different types of nodes (for instance in multiple layers)
 
-Allow for different types of arrows
+* Allow for different types of arrows
