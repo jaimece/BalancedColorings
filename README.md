@@ -17,7 +17,7 @@ This code was created for replicating different results found the literature fro
 Exhaustivity was the goal.
 Does not include state-of-the-art algorithms or sophisticated accelerations, so it cannot go beyond N = 14 oscillators.
 
-Its main input is the (weighted) adjacency matrix of the network.
+Its main input is the (possibly weighted) adjacency matrix of the network. Self-loops are OK.
 We use the convention A[source, target].
 
 The main outputs are the symmetry group and all the possible synchronization patterns.
@@ -33,7 +33,7 @@ It works with networks that are:
 
 * Unweighted/weighted (binary/real valued A)
 
-* Nondiffusive/diffusive (intra-cluster interactions are ignored for external equitable partitions)
+* Nondiffusive/diffusive (self-loops and intra-cluster interactions are ignored for external equitable partitions)
 
 We provide two versions of the module:
 
