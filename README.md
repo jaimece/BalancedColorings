@@ -11,6 +11,8 @@ Inspired in:
 
 * Aguiar, Dias - 2014 - The Lattice of Synchrony Subspaces of a Coupled Cell Network/ Characterization and Computation Algorithm
 
+* Aguiar, Dias - 2018 - Synchronization and Equitable Partitions in Weighted Networks
+* 
 and several others.
 
 This code was created for replicating different results found the literature from 2003 - 2025.
@@ -24,6 +26,8 @@ The main outputs are the symmetry group and all the possible synchronization pat
 See the examples for additional functionalities.
 
 It works with networks that are:
+
+* Simple/pseudo graphs (nonzero entries in diagonal of A)
 
 * Regular/nonregular (the vertical sums of A are/aren't equal)
 
@@ -51,13 +55,15 @@ See runtest.jl for examples.
 
 Requirements:
 
-* Oscar.jl
+* Combinatorics
+  
+* Oscar
 
-* Graphs.jl
+* Graphs
 
-* CairoMakie.jl
+* CairoMakie
 
-* GraphsMakie.jl
+* GraphsMakie
 
 Future plans:
 
